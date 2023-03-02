@@ -3,9 +3,15 @@ const { Contact } = require("../../models/contact");
 const updateFavorite = async (req, res) => {
   const { body } = req;
   const { id } = req.params;
-  const contactToUpdate = await Contact.findByIdAndUpdate(id, body, {
-    new: true,
-  });
+  const { _id } = req.user;
+  const contactToUpdate = await Contact.findOneAndUpdate(
+    { _id: id, owner: _id },
+    body,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
   if (!contactToUpdate) {
     const error = new Error(`contact whith id = ${id} not found`);
     error.status = 404;
